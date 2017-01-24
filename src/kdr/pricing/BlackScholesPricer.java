@@ -1,8 +1,12 @@
 package kdr.pricing;
 
 import java.lang.Math;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.math3.distribution.NormalDistribution;
 import kdr.pricing.Option.PutCall;
+import static kdr.pricing.Option.PutCall.CALL;
 
 /**
  * Implementation of Black Scholes option pricing algorithm.
@@ -14,7 +18,10 @@ import kdr.pricing.Option.PutCall;
  */
 public class BlackScholesPricer {
 
-    public final static class BlackScholesAnalytics {
+    /**
+     * Package level structure to group together the mid-results of the pricer
+     */
+    final static class BlackScholesAnalytics {
         double d1, d2, discountFactor, cumulativeDistributionD1, cumulativeDistributionD2, callMTM,
                 negCumulativeDistributionD1, negCumulativeDistributionD2, putMTM;
 
@@ -32,17 +39,25 @@ public class BlackScholesPricer {
     }
 
     /**
-     * Pricing method for European options
+     * Package level implemetation method for ease of unit testing.
      *
-     * @param putOrCall the option type
-     * @param v the implied volatility, sigma
-     * @param k the strike price
-     * @param s the underlying spot stock price
-     * @param t the time to maturity of the European option, in years
-     * @param rate the risk free rate
-     * @return the MTM of the option according to the standard Black Scholes formula
+     * @param putOrCall
+     * @param v
+     * @param k
+     * @param s
+     * @param t
+     * @param rate
+     * @throws IllegalArgumentException if the given parameters cannot be priced.
+     * @return
      */
-    public static double priceOption(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+    static BlackScholesAnalytics getAnalytics(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+
+        List errors= validatePricingParameters(putOrCall, v, k, s, t, rate);
+
+        if (errors != null) throw new IllegalArgumentException(errors.toString());
+
+
+        System.out.printf("Pricing  putOrCall:%s, v:%f, k:%f, s:%f, t:%f, rate:%f", putOrCall, v, k, s, t, rate);
 
         long time1 = System.currentTimeMillis();
 
@@ -56,37 +71,82 @@ public class BlackScholesPricer {
         r.d2 =
                 r.d1 - v * Math.sqrt(t);
 
-        long time2= System.currentTimeMillis();
+        long time2 = System.currentTimeMillis();
         System.out.printf("Calc d1, d2 in %dms\n", time2 - time1);
 
         // Create new standard normal distribution, mean is 0 and variance is 1
         NormalDistribution nd = new NormalDistribution();
 
-        long time2b= System.currentTimeMillis();
+        long time2b = System.currentTimeMillis();
         System.out.printf("Constructed distribution in %dms\n", time2b - time2);
 
-        r.cumulativeDistributionD1= nd.cumulativeProbability(r.d1);
-        r.cumulativeDistributionD2= nd.cumulativeProbability(r.d2);
+        r.cumulativeDistributionD1 = nd.cumulativeProbability(r.d1);
+        r.cumulativeDistributionD2 = nd.cumulativeProbability(r.d2);
         r.discountFactor = Math.pow(Math.E, (-rate * t));
 
-        r.callMTM= r.cumulativeDistributionD1 * s - r.cumulativeDistributionD2 * k * r.discountFactor;
+        r.callMTM = r.cumulativeDistributionD1 * s - r.cumulativeDistributionD2 * k * r.discountFactor;
 
-        long time3= System.currentTimeMillis();
+        long time3 = System.currentTimeMillis();
 
         System.out.printf("Calced MTM of Call in %dms\n", time3 - time2b);
 
-        if (putOrCall == PutCall.CALL) {
+        if (putOrCall == CALL) {
             System.out.printf("Call analytics: %s", r.toString());
-            return r.callMTM;
-        }
-        else
-        {
-            r.negCumulativeDistributionD1= nd.cumulativeProbability(-r.d1);
-            r.negCumulativeDistributionD2= nd.cumulativeProbability(-r.d2);
+        } else {
+            r.negCumulativeDistributionD1 = nd.cumulativeProbability(-r.d1);
+            r.negCumulativeDistributionD2 = nd.cumulativeProbability(-r.d2);
             r.putMTM = r.negCumulativeDistributionD2 * k * r.discountFactor - r.negCumulativeDistributionD1 * s;
-            long time4= System.currentTimeMillis();
+            long time4 = System.currentTimeMillis();
             System.out.printf("Calced MTM of Put in %d.\n Put analytics: %s", time4 - time3, r.toString());
-            return r.putMTM;
         }
+
+        return r;
+    }
+
+    /**
+     * Pricing method for European options
+     *
+     * @param putOrCall the option type
+     * @param v         the implied volatility, sigma
+     * @param k         the strike price
+     * @param s         the underlying spot stock price
+     * @param t         the time to maturity of the European option, in years
+     * @param rate      the risk free rate
+     * @return the MTM of the option according to the standard Black Scholes formula
+     */
+    public static double priceOption(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+
+        BlackScholesAnalytics r = BlackScholesPricer.getAnalytics(putOrCall, v, k, s, t, rate);
+
+        return putOrCall == CALL ? r.callMTM : r.putMTM;
+
+    }
+
+    /**
+     * Validate the pre-conditions of the pricer.  Returns true if there are
+     *
+     * Package-level for unit testing.
+     *
+     * @param putOrCall
+     * @param v
+     * @param k
+     * @param s
+     * @param t
+     * @param rate
+     * @throws IllegalArgumentException if the parameters provided cannot be priced.
+     * @return null if the parameters provided are valid, else a List of error messages
+     */
+    static List validatePricingParameters(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+        List messages= new ArrayList(5);
+
+        if(putOrCall == null) messages.add("putOrCall cannot be null");
+        if (v < 0.0) messages.add("A price cannot be negative.  v = " + v);
+        if (k < 0.0) messages.add("A price cannot be negative.  k = " + k);
+        if (s < 0.0) messages.add("A price cannot be negative.  s = " + s);
+        if (t < 0.0) messages.add("Time to maturity cannot be negative.  t = " + t);
+
+        // Negative rates are not deemed invalid
+
+        return (messages.isEmpty() ? null : messages);
     }
 }

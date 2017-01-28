@@ -7,18 +7,18 @@ import org.testng.annotations.Test;
 import java.util.Calendar;
 import java.util.Date;
 
+import static kdr.util.DateUtility.YEAR_FRACTION_FOR_1_DAY;
 import static org.testng.Assert.*;
 
 /**
+ * Unit tests for Option class.
+ *
+ * Year fraction tests are correct if they are less than 1 days tolerance
+ * to simplify testing for values which would have many decimal points.
+ *
  * Created by kenneth on 23/01/2017.
  */
 public class OptionTest {
-
-    /**
-     * Year fraction tests are correct if they are less than 1 days tolerance
-     * to simplify testing for values which would have many decimal points
-     */
-    final static float YEAR_FRACTION_TOLERANCE = 1.0f / 365f;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -60,8 +60,8 @@ public class OptionTest {
 
         double expected= -0.5d;
         double expiry = o.getTimeToExpiry();
-        assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_TOLERANCE),
-                "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_TOLERANCE
+        assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_FOR_1_DAY),
+                "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_FOR_1_DAY
         );    }
 
     @Test
@@ -82,19 +82,19 @@ public class OptionTest {
 
         double expected= 0.5d;
         double expiry = o.getTimeToExpiry();
-        assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_TOLERANCE),
-                "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_TOLERANCE
+        assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_FOR_1_DAY),
+                "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_FOR_1_DAY
                 );
     }
 
     @Test
     public void testGetTimeToExpiryFullYear() throws Exception {
-        Calendar now= Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
         now.set(2017, 0, 1, 0, 0, 0);
         Date cobDate = now.getTime();
         System.out.printf("cobDate: %s", cobDate);
 
-        Calendar oneYearLater= Calendar.getInstance();
+        Calendar oneYearLater = Calendar.getInstance();
         oneYearLater.set(2018, 0, 1, 0, 0, 0);
         Date expiryDate = oneYearLater.getTime();
         System.out.printf("expiryDate: %s", expiryDate);
@@ -102,17 +102,12 @@ public class OptionTest {
         Option o = new Option("TestId", "TestCpy", Option.PutCall.CALL, expiryDate, 0.2,
                 100.0, 98.0, cobDate);
 
-        double expected= 1.0d;
+        double expected = 1.0d;
         double expiry = o.getTimeToExpiry();
-        assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_TOLERANCE),
-                "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_TOLERANCE
-        );    }
-
-    @Test
-    public void divByZero() {
-        assertEquals(Math.sqrt(0.0d), 0.0d);
+        assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_FOR_1_DAY),
+                "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_FOR_1_DAY
+        );
     }
-
 
 
 }

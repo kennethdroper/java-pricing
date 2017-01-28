@@ -1,5 +1,7 @@
 package kdr.pricing;
 
+import kdr.util.DateUtility;
+
 import java.util.Date;
 
 /**
@@ -100,30 +102,7 @@ public class Option {
      * this option has expired.
      */
     public double getTimeToExpiry() {
-        long cobInMillis = cobDate.getTime();
-        long expiryInMillis = expiryDate.getTime();
-
-        long difference = expiryInMillis - cobInMillis;
-
-        return convertMillisToYearFraction(difference);
-    }
-
-    /**
-     * Basic implementation of year fractions.  Does not take into account leap years.
-     *
-     * TODO: separate into a utility class and work directly works with date functions.
-     *
-     * @param millis
-     * @return
-     */
-    private float convertMillisToYearFraction(long millis){
-        float yearFraction = (float) millis / 1000f / 60f / 60f / 24f / 365f;
-        float secs = millis / 1000f;
-        float mins = secs / 60f;
-        float hours = mins / 60f;
-        float days = mins / 24f;
-        float years = days / 365f;
-        return yearFraction;
+        return DateUtility.getYearFraction(cobDate, expiryDate);
     }
 
 }

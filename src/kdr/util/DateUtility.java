@@ -1,5 +1,8 @@
 package kdr.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -56,6 +59,26 @@ public final class DateUtility {
         float days = mins / 24f;
         float years = days / 365f;
         return yearFraction;
+    }
+
+    /**
+     * Convert a string into a date.  Only one format is supported.
+     * @param yyyyMMDD
+     * @return the Date representation of the string
+     * @throws IllegalArgumentException if the given string cannot be parsed in yyyyMMDD format.
+     */
+    public static Date parseYYYYMMDD(String yyyyMMDD) {
+        DateFormat sd= new SimpleDateFormat("yyyyMMdd");
+        Date result= null;
+        try {
+            result= sd.parse(yyyyMMDD);
+        }
+        catch (ParseException pe)
+        {
+            // Deliberate change of style to use unchecked exception
+            throw new IllegalArgumentException(pe);
+        }
+        return result;
     }
 
 }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 import kdr.pricing.Option.PutCall;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import static kdr.pricing.Option.PutCall.CALL;
 
 /**
@@ -62,11 +64,17 @@ public class BlackScholesPricer {
         long time1 = System.currentTimeMillis();
 
         BlackScholesAnalytics r = new BlackScholesAnalytics();
-
+/*
         r.d1 =
                 1 / v * Math.sqrt(t) * (
-                        Math.log(s / k) + (rate + (Math.pow(v, 2) / 2))
-                                * t);
+                        Math.log(s / k) +
+                                (rate + (Math.pow(v, 2) / 2)) * t);
+*/
+
+        r.d1 =
+                (Math.log(s / k) +
+                        (rate + (Math.pow(v, 2) / 2)) * t)
+                        / v * Math.sqrt(t);
 
         r.d2 =
                 r.d1 - v * Math.sqrt(t);
@@ -82,7 +90,7 @@ public class BlackScholesPricer {
 
         r.cumulativeDistributionD1 = nd.cumulativeProbability(r.d1);
         r.cumulativeDistributionD2 = nd.cumulativeProbability(r.d2);
-        r.discountFactor = Math.pow(Math.E, (-rate * t));
+        r.discountFactor = Math.exp(-rate * t);
 
         r.callMTM = r.cumulativeDistributionD1 * s - r.cumulativeDistributionD2 * k * r.discountFactor;
 
@@ -95,9 +103,13 @@ public class BlackScholesPricer {
         } else {
             r.negCumulativeDistributionD1 = nd.cumulativeProbability(-r.d1);
             r.negCumulativeDistributionD2 = nd.cumulativeProbability(-r.d2);
-            r.putMTM = r.negCumulativeDistributionD2 * k * r.discountFactor - r.negCumulativeDistributionD1 * s;
+
+            // Alternative implementation without reusing call MTM:
+            // r.putMTM = r.negCumulativeDistributionD2 * k * r.discountFactor - r.negCumulativeDistributionD1 * s;
+
+            r.putMTM = k * r.discountFactor - s + r.callMTM;
             long time4 = System.currentTimeMillis();
-            System.out.printf("Calced MTM of Put in %d.\n Put analytics: %s", time4 - time3, r.toString());
+            System.out.printf("Calced MTM of Put in %d.\n Put analytics: %s \n", time4 - time3, r.toString());
         }
 
         return r;
@@ -114,12 +126,18 @@ public class BlackScholesPricer {
      * @param rate      the risk free rate
      * @return the MTM of the option according to the standard Black Scholes formula
      */
-    public static double priceOption(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+    public static double priceOption(PutCall putOrCall, double v, float k, float s, float t, double rate)
+    {
 
         BlackScholesAnalytics r = BlackScholesPricer.getAnalytics(putOrCall, v, k, s, t, rate);
 
         return putOrCall == CALL ? r.callMTM : r.putMTM;
 
+    }
+
+
+    static double calcDelta(PutCall putCall, double d1) {
+        throw new NotImplementedException();
     }
 
     /**

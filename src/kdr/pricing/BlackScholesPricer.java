@@ -71,13 +71,15 @@ public class BlackScholesPricer {
                                 (rate + (Math.pow(v, 2) / 2)) * t);
 */
 
-        r.d1 =
-                (Math.log(s / k) +
-                        (rate + (Math.pow(v, 2) / 2)) * t)
-                        / v * Math.sqrt(t);
+        double log_sk = Math.log(s / k);
+        double pow_v2 = Math.pow(v, 2);
+        double d1num = log_sk + (rate + (pow_v2 / 2)) * t;
 
-        r.d2 =
-                r.d1 - v * Math.sqrt(t);
+        double v_times_root_t = v * Math.sqrt(t);
+
+        r.d1 = d1num / v_times_root_t;
+
+        r.d2 = r.d1 - v_times_root_t;
 
         long time2 = System.currentTimeMillis();
         System.out.printf("Calc d1, d2 in %dms\n", time2 - time1);

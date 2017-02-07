@@ -82,9 +82,9 @@ public class BlackScholesPricerTest {
 
         assert(r != null);
 
-        // The price of an option on expiry is half the difference between the price of the underlying and the strike
+        // The price of an option on expiry the difference between the price of the underlying and the strike
         // This gives negative prices, which obviously would never be observable.
-        assertEquals(r.callMTM, (underlyingPrice - strike) / 2);
+        assertEquals(r.callMTM, (underlyingPrice - strike));
     }
 
     private double riskFreeRateOn20170207 = 0.26;
@@ -179,10 +179,53 @@ public class BlackScholesPricerTest {
 
     }
 
+
+    /**
+     * http://www.investopedia.com/university/options-pricing/black-scholes-model.asp
+     */
+    @Test
+    public void testCallOnlineCalc() {
+        String cobYYYYMMDD = "20170101";
+        String expiryYYYYMMDD = "20170105";
+
+        testOptionPrice(Option.PutCall.CALL, 205f, 210.59f,
+                0.1404f, cobYYYYMMDD, expiryYYYYMMDD, 0.002175,
+                5.6351);
+
+    }
+
+    @Test
+    public void testPutOnlineCalc() {
+        String cobYYYYMMDD = "20170101";
+        String expiryYYYYMMDD = "20170105";
+
+        testOptionPrice(Option.PutCall.PUT, 205f, 210.59f,
+                0.1404f, cobYYYYMMDD, expiryYYYYMMDD, 0.002175,
+                0.0402);
+
+    }
+
+    @Test
+    public void testOperandOrder() {
+        double t = 0.002;
+        double d1num = 5;
+        double d1denominator = 5 * Math.sqrt(t);
+
+        double order1 = d1num / d1denominator;
+
+        double order2 = d1num / 5 * Math.sqrt(t);
+
+        assertEquals(order1, order2);
+    }
+
     private void testOptionPrice(Option.PutCall putCall, float strike, float underlyingPrice,
                                  float impliedVol,
                                  String cobYYYYMMDD, String expiryYYYYMMDD, double riskFreeRate,
                                  double expectedMTM) {
+
+        // Test constant within which doubles are considered equal
+        final double EPSILON = 0.0001d;
+
         Date cobDate= DateUtility.parseYYYYMMDD(cobYYYYMMDD);
         Date expiryDate = DateUtility.parseYYYYMMDD(expiryYYYYMMDD);
 
@@ -202,11 +245,11 @@ public class BlackScholesPricerTest {
         // The price of an option on expiry is half the difference between the price of the underlying and the strike
         // This gives negative prices, which obviously would never be observable.
         if (putCall == Option.PutCall.CALL) {
-            assertEquals(r.callMTM, expectedMTM);
+            assertEquals(r.callMTM, expectedMTM, EPSILON);
         }
         else
         {
-            assertEquals(r.putMTM, expectedMTM);
+            assertEquals(r.putMTM, expectedMTM, EPSILON);
         }
 
     }

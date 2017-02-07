@@ -205,19 +205,6 @@ public class BlackScholesPricerTest {
 
     }
 
-    @Test
-    public void testOperandOrder() {
-        double t = 0.002;
-        double d1num = 5;
-        double d1denominator = 5 * Math.sqrt(t);
-
-        double order1 = d1num / d1denominator;
-
-        double order2 = d1num / 5 * Math.sqrt(t);
-
-        assertEquals(order1, order2);
-    }
-
     private void testOptionPrice(Option.PutCall putCall, float strike, float underlyingPrice,
                                  float impliedVol,
                                  String cobYYYYMMDD, String expiryYYYYMMDD, double riskFreeRate,

@@ -12,9 +12,16 @@ import static org.testng.Assert.*;
 /**
  * Unit tests for BlackScholesPricer.
  *
+ * Comparisons drawn up with calculators here:
+ *
+ * http://www.investopedia.com/university/options-pricing/black-scholes-model.asp
+ * http://www.fintools.com/resources/online-calculators/options-calcs/options-calculator/
+ *
  * Created by kenneth on 23/01/2017.
  */
 public class BlackScholesPricerTest {
+
+    private double riskFreeRateOn20170207 = 0.026;
 
     @BeforeMethod
     public void setUp() {
@@ -23,187 +30,155 @@ public class BlackScholesPricerTest {
 
     @Test
     public void testCallsOnExpiryDate() throws Exception {
+        String cobYYYYMMDD = "20170207";
+        String expiryYYYYMMDD = "20170207";
+        double riskFreeRate = 0.2;
 
-        // In the money options
-        testPriceCallOnExpiryDate(Option.PutCall.CALL, 100.0, 150.0);
-        testPriceCallOnExpiryDate(Option.PutCall.CALL,50.0, 225.0);
-        testPriceCallOnExpiryDate(Option.PutCall.CALL,1.0, 1.0);
-        testPriceCallOnExpiryDate(Option.PutCall.CALL,200.0, 250.0);
-        testPriceCallOnExpiryDate(Option.PutCall.CALL,50.0, 200.0);
+        testOptionPrice(Option.PutCall.CALL, 100.0f, 150.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
 
-        // Out The Money options
-        testPriceCallOnExpiryDate(Option.PutCall.CALL,250.0, 200.0);
-        testPriceCallOnExpiryDate(Option.PutCall.CALL,500.0, 200.0);
-
+        testOptionPrice(Option.PutCall.CALL, 500.0f, 10.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
     }
 
     @Test
     public void testPutsOnExpiryDate() throws Exception {
+        String cobYYYYMMDD = "20170207";
+        String expiryYYYYMMDD = "20170207";
+        double riskFreeRate = 0.2;
 
-        // ITM options
-        testPriceCallOnExpiryDate(Option.PutCall.PUT, 100.0, 150.0);
-        testPriceCallOnExpiryDate(Option.PutCall.PUT,50.0, 225.0);
-        testPriceCallOnExpiryDate(Option.PutCall.PUT,1.0, 1.0);
-        testPriceCallOnExpiryDate(Option.PutCall.PUT,200.0, 250.0);
-        testPriceCallOnExpiryDate(Option.PutCall.PUT,50.0, 200.0);
+        testOptionPrice(Option.PutCall.PUT, 100.0f, 150.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
 
-        // OTM options
-        testPriceCallOnExpiryDate(Option.PutCall.PUT,250.0, 200.0);
-        testPriceCallOnExpiryDate(Option.PutCall.PUT,500.0, 200.0);
-
+        testOptionPrice(Option.PutCall.PUT, 500.0f, 10.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
     }
 
-    /** Utility method to flex the strike and underlying prices when the
-     * expiry date is today.  Vol is held constant.
-     * @param strike strike price
-     * @param underlyingPrice underlying prices.
-     */
-    private void testPriceCallOnExpiryDate(Option.PutCall putCall, double strike, double underlyingPrice) throws Exception {
-        // use a Calendar to get exactly the same millis in the date
-        Calendar now= Calendar.getInstance();
-        now.setTime(new Date());
 
-        Date cobDate = now.getTime();
-        Date expiryDate = now.getTime();
+    @Test
+    public void testPutsATMOnExpiry() throws Exception {
+
+        String cobYYYYMMDD = "20170207";
+        String expiryYYYYMMDD = "20170207";
+        double riskFreeRate = 0.2;
+
+        testOptionPrice(Option.PutCall.PUT, 1.0f, 1.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
+
+        testOptionPrice(Option.PutCall.PUT, 200.0f, 200.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
 
 
-        Option o = new Option("TestId", "TestCpy", putCall, expiryDate, 0.2,
-                strike, underlyingPrice, cobDate);
-
-        double riskFreeRate = 0.5;
-
-        BlackScholesPricer.BlackScholesAnalytics r= BlackScholesPricer.getAnalytics(
-                o.getPutCall(),
-                o.getImpliedVol(),
-                (float) o.getStrikePrice(),
-                (float) o.getUnderlyingPrice(),
-                (float) o.getTimeToExpiry(),
-                riskFreeRate);
-
-        assert(r != null);
-
-        // The price of an option on expiry the difference between the price of the underlying and the strike
-        // This gives negative prices, which obviously would never be observable.
-        assertEquals(r.callMTM, (underlyingPrice - strike));
+        testOptionPrice(Option.PutCall.PUT, 52.1f, 52.1f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
     }
 
-    private double riskFreeRateOn20170207 = 0.26;
+
+    @Test
+    public void testCallsATMOnExpiry() throws Exception {
+
+        String cobYYYYMMDD = "20170207";
+        String expiryYYYYMMDD = "20170207";
+        double riskFreeRate = 0.2;
+
+        testOptionPrice(Option.PutCall.CALL, 1.0f, 1.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
+
+        testOptionPrice(Option.PutCall.CALL, 200.0f, 200.0f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
+
+
+        testOptionPrice(Option.PutCall.CALL, 52.1f, 52.1f,
+                0.10f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRate,
+                0.0);
+    }
 
     /**
      * http://finance.yahoo.com/quote/GOOG/options?p=GOOG&date=1490313600
      */
     @Test
-    public void testGOOGDataCall8000() {
+    public void testGOOGDataStrike8000() {
         float underlyingPrice = 810.10f;
         String cobYYYYMMDD = "20170207";
         String expiryYYYYMMDD = "20170324";
 
         testOptionPrice(Option.PutCall.CALL, 800f, underlyingPrice,
                 0.1641f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
-                (23.3 + 22.1) / 2f);
+                25.4895);
 
+        testOptionPrice(Option.PutCall.PUT, 800f, underlyingPrice,
+                0.1641f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
+                12.8292);
     }
 
     @Test
-    public void testGOOGDataCall8025() {
+    public void testGOOGDataStrike8025() {
         float underlyingPrice = 810.10f;
         String cobYYYYMMDD = "20170207";
         String expiryYYYYMMDD = "20170324";
 
         testOptionPrice(Option.PutCall.CALL, 802.5f, underlyingPrice,
                 0.1376f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
-                (18.8 + 17.6) / 2f);
+                21.1262);
 
+        testOptionPrice(Option.PutCall.PUT, 802.5f, underlyingPrice,
+                0.1376f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
+                10.9579);
     }
 
     @Test
-    public void testGOOGDataCall8050() {
+    public void testGOOGDataStrike8050() {
         float underlyingPrice = 810.10f;
         String cobYYYYMMDD = "20170207";
         String expiryYYYYMMDD = "20170324";
 
         testOptionPrice(Option.PutCall.CALL, 805f, underlyingPrice,
                 0.1652f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
-                (20.6 + 19.4) / 2f);
+                22.74377);
 
     }
 
     @Test
-    public void testGOOGDataCall8010() {
+    public void testGOOGDataStrike8010() {
         float underlyingPrice = 810.10f;
         String cobYYYYMMDD = "20170207";
         String expiryYYYYMMDD = "20170324";
 
         testOptionPrice(Option.PutCall.CALL, 810f, underlyingPrice,
                 0.1371f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
-                (14.9 + 13.9) / 2f);
+                16.9136);
+
+        testOptionPrice(Option.PutCall.PUT, 810f, underlyingPrice,
+                0.1371f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
+                14.2213);
 
     }
 
     @Test
-    public void testGOOGDataPut8000() {
+    public void testGOOGDataStrikeOTM() {
         float underlyingPrice = 810.10f;
         String cobYYYYMMDD = "20170207";
         String expiryYYYYMMDD = "20170324";
 
-        testOptionPrice(Option.PutCall.PUT, 800f, underlyingPrice,
-                0.1560f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
-                (12.9 + 13.9) / 2f);
+        testOptionPrice(Option.PutCall.CALL, 820f, underlyingPrice,
+                0.1371f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
+                12.2569);
+
+        testOptionPrice(Option.PutCall.PUT, 820f, underlyingPrice,
+                0.1371f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
+                19.5326);
 
     }
 
-    @Test
-    public void testGOOGDataPut785() {
-        float underlyingPrice = 810.10f;
-        String cobYYYYMMDD = "20170207";
-        String expiryYYYYMMDD = "20170324";
-
-        testOptionPrice(Option.PutCall.PUT, 785f, underlyingPrice,
-                0.1934f, cobYYYYMMDD, expiryYYYYMMDD, riskFreeRateOn20170207,
-                (12.1 + 11.0) / 2f);
-
-    }
-
-    /**
-     * Sample data from https://invento.quora.com/Advanced-Black-Scholes-calculation-with-a-real-example
-     */
-    @Test
-    public void testGOOGDataCallApple() {
-        float underlyingPrice = 460f;
-        String cobYYYYMMDD = "20170101";
-        String expiryYYYYMMDD = "20170304";
-
-        testOptionPrice(Option.PutCall.CALL, 470f, 460f,
-                0.58f, cobYYYYMMDD, expiryYYYYMMDD, 0.02,
-                37.0);
-
-    }
-
-
-    /**
-     * http://www.investopedia.com/university/options-pricing/black-scholes-model.asp
-     */
-    @Test
-    public void testCallOnlineCalc() {
-        String cobYYYYMMDD = "20170101";
-        String expiryYYYYMMDD = "20170105";
-
-        testOptionPrice(Option.PutCall.CALL, 205f, 210.59f,
-                0.1404f, cobYYYYMMDD, expiryYYYYMMDD, 0.002175,
-                5.6351);
-
-    }
-
-    @Test
-    public void testPutOnlineCalc() {
-        String cobYYYYMMDD = "20170101";
-        String expiryYYYYMMDD = "20170105";
-
-        testOptionPrice(Option.PutCall.PUT, 205f, 210.59f,
-                0.1404f, cobYYYYMMDD, expiryYYYYMMDD, 0.002175,
-                0.0402);
-
-    }
 
     private void testOptionPrice(Option.PutCall putCall, float strike, float underlyingPrice,
                                  float impliedVol,
@@ -240,6 +215,5 @@ public class BlackScholesPricerTest {
         }
 
     }
-
-
+    
 }

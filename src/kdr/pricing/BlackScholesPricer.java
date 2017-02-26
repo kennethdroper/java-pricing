@@ -77,6 +77,9 @@ public class BlackScholesPricer {
 
         double v_times_root_t = v * Math.sqrt(t);
 
+        // Avoid NaN due to divide by zero error.  No time left means no price.
+        if (v_times_root_t == 0) return r;
+
         r.d1 = d1num / v_times_root_t;
 
         r.d2 = r.d1 - v_times_root_t;

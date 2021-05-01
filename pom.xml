@@ -24,6 +24,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <testNGVersion>6.10</testNGVersion>
+        <junitVersion>4.13.1</junitVersion>
         <slf4jVersion>1.7.9</slf4jVersion>
         <log4j2Version>2.14.1</log4j2Version>
     </properties>
@@ -38,7 +39,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${junitVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

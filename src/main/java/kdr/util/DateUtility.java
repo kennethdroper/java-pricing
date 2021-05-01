@@ -63,15 +63,15 @@ public final class DateUtility {
 
     /**
      * Convert a string into a date.  Only one format is supported.
-     * @param yyyyMMDD
+     * @param yyyyMMdd year - month - day
      * @return the Date representation of the string
      * @throws IllegalArgumentException if the given string cannot be parsed in yyyyMMDD format.
      */
-    public static Date parseYYYYMMDD(String yyyyMMDD) {
+    public static Date parseYYYYMMDD(String yyyyMMdd) {
         DateFormat sd= new SimpleDateFormat("yyyyMMdd");
-        Date result= null;
+        Date result;
         try {
-            result= sd.parse(yyyyMMDD);
+            result= sd.parse(yyyyMMdd);
         }
         catch (ParseException pe)
         {

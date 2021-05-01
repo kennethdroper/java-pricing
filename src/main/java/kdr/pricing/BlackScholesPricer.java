@@ -6,7 +6,8 @@ import java.util.List;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 import kdr.pricing.Option.PutCall;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static kdr.pricing.Option.PutCall.CALL;
 
@@ -43,23 +44,24 @@ public class BlackScholesPricer {
     /**
      * Package level implementation method for ease of unit testing.
      *
-     * @param putOrCall
-     * @param v
-     * @param k
-     * @param s
-     * @param t
-     * @param rate
+     * @param putOrCall @see #priceOption
+     * @param v @see #priceOption
+     * @param k @see #priceOption
+     * @param s @see #priceOption
+     * @param t @see #priceOption
+     * @param rate @see #priceOption
      * @throws IllegalArgumentException if the given parameters cannot be priced.
-     * @return
+     * @return BlackScholesAnalytics with pricing information
      */
     static BlackScholesAnalytics getAnalytics(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+        final Logger logger = LoggerFactory.getLogger(BlackScholesPricer.class);
 
-        List errors= validatePricingParameters(putOrCall, v, k, s, t, rate);
+        List<String> errors= validatePricingParameters(putOrCall, v, k, s, t, rate);
+
 
         if (errors != null) throw new IllegalArgumentException(errors.toString());
 
-
-        System.out.printf("Pricing  putOrCall:%s, v:%f, k:%f, s:%f, t:%f, rate:%f", putOrCall, v, k, s, t, rate);
+        logger.info("Pricing  putOrCall:{}, v:{}, k:{}, s:{}, t:{}, rate:{}", putOrCall, v, k, s, t, rate);
 
         long time1 = System.currentTimeMillis();
 
@@ -85,13 +87,13 @@ public class BlackScholesPricer {
         r.d2 = r.d1 - v_times_root_t;
 
         long time2 = System.currentTimeMillis();
-        System.out.printf("Calc d1, d2 in %dms\n", time2 - time1);
+        logger.info("Calc d1, d2 in {}ms", time2 - time1);
 
         // Create new standard normal distribution, mean is 0 and variance is 1
         NormalDistribution nd = new NormalDistribution();
 
         long time2b = System.currentTimeMillis();
-        System.out.printf("Constructed distribution in %dms\n", time2b - time2);
+        logger.info("Constructed distribution in {}ms", time2b - time2);
 
         r.cumulativeDistributionD1 = nd.cumulativeProbability(r.d1);
         r.cumulativeDistributionD2 = nd.cumulativeProbability(r.d2);
@@ -101,10 +103,10 @@ public class BlackScholesPricer {
 
         long time3 = System.currentTimeMillis();
 
-        System.out.printf("Calced MTM of Call in %dms\n", time3 - time2b);
+        logger.info("Calced MTM of Call in {}ms", time3 - time2b);
 
         if (putOrCall == CALL) {
-            System.out.printf("Call analytics: %s", r.toString());
+            logger.debug("Call analytics: {}", r.toString());
         } else {
             r.negCumulativeDistributionD1 = nd.cumulativeProbability(-r.d1);
             r.negCumulativeDistributionD2 = nd.cumulativeProbability(-r.d2);
@@ -114,7 +116,7 @@ public class BlackScholesPricer {
 
             r.putMTM = k * r.discountFactor - s + r.callMTM;
             long time4 = System.currentTimeMillis();
-            System.out.printf("Calced MTM of Put in %d.\n Put analytics: %s \n", time4 - time3, r.toString());
+            logger.info("Calced MTM of Put in {}.\nPut analytics: {}", time4 - time3, r.toString());
         }
 
         return r;
@@ -142,34 +144,34 @@ public class BlackScholesPricer {
 
 
     static double calcDelta(PutCall putCall, double d1) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Delta calculation is not yet implemented.");
     }
 
     /**
-     * Validate the pre-conditions of the pricer.  Returns true if there are
+     * Validate the pre-conditions of the pricer.
      *
      * Package-level for unit testing.
      *
-     * @param putOrCall
-     * @param v
-     * @param k
-     * @param s
-     * @param t
-     * @param rate
+     * @param putOrCall @see #priceOption
+     * @param v @see #priceOption
+     * @param k @see #priceOption
+     * @param s @see #priceOption
+     * @param t @see #priceOption
+     * @param rate @see #priceOption
      * @throws IllegalArgumentException if the parameters provided cannot be priced.
      * @return null if the parameters provided are valid, else a List of error messages
      */
-    static List validatePricingParameters(PutCall putOrCall, double v, float k, float s, float t, double rate) {
-        List messages= new ArrayList(5);
+    static List<String> validatePricingParameters(PutCall putOrCall, double v, float k, float s, float t, double rate) {
+        List<String> messages= new ArrayList<String>(5);
 
         if(putOrCall == null) messages.add("putOrCall cannot be null");
-        if (v < 0.0) messages.add("A price cannot be negative.  v = " + v);
-        if (k < 0.0) messages.add("A price cannot be negative.  k = " + k);
-        if (s < 0.0) messages.add("A price cannot be negative.  s = " + s);
-        if (t < 0.0) messages.add("Time to maturity cannot be negative.  t = " + t);
+        if (v < 0.0 || Double.isNaN(v)) messages.add("Volatility cannot be negative.  v = " + v);
+        if (k < 0.0 || Float.isNaN(k)) messages.add("Strike price cannot be negative.  k = " + k);
+        if (s < 0.0 || Float.isNaN(s)) messages.add("Underlying's price cannot be negative.  s = " + s);
+        if (t < 0.0 || Float.isNaN(t)) messages.add("Time to maturity cannot be negative or NaN.  t = " + t);
 
         // Negative rates are not deemed invalid
-
+        if (Double.isNaN(rate)) messages.add("Rate cannot be  NaN.  rate = " + rate);
         return (messages.isEmpty() ? null : messages);
     }
 }

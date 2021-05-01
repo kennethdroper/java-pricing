@@ -4,6 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- spring boot application: 3 sections added: parent, two dependencies, plugin -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
     <groupId>com.kdr.pricing</groupId>
     <artifactId>java-pricing</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -15,6 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <testNGVersion>6.10</testNGVersion>
         <slf4jVersion>1.7.9</slf4jVersion>
         <log4j2Version>2.14.1</log4j2Version>
     </properties>
@@ -23,7 +32,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8</version>
+            <version>${testNGVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -50,11 +59,12 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4jVersion}</version>
         </dependency> -->
+        <!-- log4j-slf4j-impl can't be used with spring boot log4j-to-slf4j.
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j2Version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -74,6 +84,18 @@
             <version>${slf4jVersion}</version>
         </dependency>
         -->
+
+        <!-- spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -120,5 +142,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <!-- Spring boot addition -->
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 </project>

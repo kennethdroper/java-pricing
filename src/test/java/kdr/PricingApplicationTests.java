@@ -1,4 +1,4 @@
-package kdr.pricing;
+package kdr;
 
 import kdr.rest.PricingController;
 import org.junit.jupiter.api.Test;
@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PricingApplicationTests {
 
     @Autowired
-    private PricingController controller;
+    private PricingApplication application;
 
     @Test
     void contextLoads() {
-        assertThat(controller).isNotNull();
+        assertThat(application).isNotNull();
     }
 }

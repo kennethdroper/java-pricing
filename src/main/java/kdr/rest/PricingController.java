@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class JavaPricingController {
+public class PricingController {
 
-    private final static Logger logger= LoggerFactory.getLogger(JavaPricingController.class);
+    private final static Logger logger= LoggerFactory.getLogger(PricingController.class);
 
     /**
      * Rest controller, handles HTTP Gets such as:

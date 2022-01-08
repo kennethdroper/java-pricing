@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class PricingController {
+public final class PricingController {
 
     private final static Logger logger= LoggerFactory.getLogger(PricingController.class);
 
     /**
      * Rest controller, handles HTTP Gets such as:
      *
-     * http://localhost:8080/priceOption?strike=100&s=10&v=5&r=0.01&t=2
+     * http://localhost:8080/priceOption?putOrCall=PUT&k=100&s=10&v=5&r=0.01&t=2
      *
      * @param k @see kdr.pricing.BlackScholesPricer
      * @param s @see kdr.pricing.BlackScholesPricer
@@ -77,4 +77,5 @@ public class PricingController {
                           "http://localhost:8080/priceOption?putOrCall=CALL&k=22&s=100&v=5&r=0.01&t=2" +
                 "</a>";
     }
+
 }

@@ -27,6 +27,7 @@
         <junitVersion>4.13.1</junitVersion>
         <slf4jVersion>1.7.9</slf4jVersion>
         <log4j2Version>2.17.1</log4j2Version>
+        <commons-math3-version>3.6.1</commons-math3-version>
     </properties>
 
     <dependencies>
@@ -45,7 +46,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.6.1</version>
+            <version>${commons-math3-version}</version>
         </dependency>
         <!-- logging dependencies -->
         <dependency>

@@ -27,6 +27,7 @@
         <junitVersion>4.13.1</junitVersion>
         <slf4jVersion>1.7.9</slf4jVersion>
         <log4j2Version>2.17.1</log4j2Version>
+        <springfoxVersion>2.6.1</springfoxVersion>
         <commons-math3-version>3.6.1</commons-math3-version>
     </properties>
 
@@ -98,6 +99,21 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Swagger -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfoxVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfoxVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

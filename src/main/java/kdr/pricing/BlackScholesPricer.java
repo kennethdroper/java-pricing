@@ -4,6 +4,8 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 
+import kdr.model.PricingParams;
+import kdr.model.PricingResult;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import kdr.pricing.Option.PutCall;
 import org.slf4j.Logger;
@@ -141,6 +143,21 @@ public class BlackScholesPricer {
         return putOrCall == CALL ? r.callMTM : r.putMTM;
 
     }
+
+    public static PricingResult priceOption(PricingParams params)
+    {
+        BlackScholesAnalytics r = BlackScholesPricer.getAnalytics(
+                params.getPutCall(),
+                params.getImpliedVolatility(),
+                params.getStrikePrice(),
+                params.getUnderlyingPrice(),
+                params.getYearsToMaturity(),
+                params.getRiskFreeRate());
+        double mtm= params.getPutCall() == CALL ? r.callMTM : r.putMTM;
+        PricingResult result= new PricingResult(params, mtm);
+        return result;
+    }
+
 
 
     static double calcDelta(PutCall putCall, double d1) {

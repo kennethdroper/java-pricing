@@ -1,17 +1,24 @@
 package kdr.rest;
 
+import kdr.model.PricingParams;
+import kdr.model.PricingResult;
 import kdr.pricing.BlackScholesPricer;
 import kdr.pricing.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public final class PricingController {
 
     private final static Logger logger= LoggerFactory.getLogger(PricingController.class);
+
+    @PostMapping(path = "/priceOption", consumes = "application/json")
+    public PricingResult priceOption(@RequestBody PricingParams params) {
+        logger.info("Received request: " + params);
+        PricingResult result = BlackScholesPricer.priceOption(params);
+        return result;
+    }
 
     /**
      * Rest controller, handles HTTP Gets such as:

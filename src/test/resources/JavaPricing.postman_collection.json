@@ -1,0 +1,103 @@
+{
+	"info": {
+		"_postman_id": "c27f3160-b2d9-4fa9-8b16-f0120a564bb8",
+		"name": "JavaPricing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/priceOptionHelp",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/priceOptionHelp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"priceOptionHelp"
+					]
+				},
+				"description": "Help URL"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/priceOption?putOrCall=PUT&v=0.1&k=200&s=140&t=1.3&r=0.03",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/priceOption?putOrCall=PUT&v=0.1&k=200&s=140&t=1.3&r=0.03",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"priceOption"
+					],
+					"query": [
+						{
+							"key": "putOrCall",
+							"value": "PUT"
+						},
+						{
+							"key": "v",
+							"value": "0.1"
+						},
+						{
+							"key": "k",
+							"value": "200"
+						},
+						{
+							"key": "s",
+							"value": "140"
+						},
+						{
+							"key": "t",
+							"value": "1.3"
+						},
+						{
+							"key": "r",
+							"value": "0.03"
+						}
+					]
+				},
+				"description": "GET request"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/priceOption",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"putCall\":\"PUT\",\r\n    \"impliedVolatility\":0.1,\r\n    \"strikePrice\":200,\r\n    \"underlyingPrice\":140,\r\n    \"yearsToMaturity\":1.3,\r\n    \"riskFreeRate\":0.03\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/priceOption",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"priceOption"
+					]
+				},
+				"description": "POST test"
+			},
+			"response": []
+		}
+	]
+}

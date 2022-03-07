@@ -1,10 +1,11 @@
 package kdr.pricing;
 
+import kdr.model.PricingParams;
+import kdr.model.PricingResult;
 import kdr.util.DateUtility;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import static org.testng.Assert.*;
@@ -212,6 +213,55 @@ public class BlackScholesPricerTest {
         else
         {
             assertEquals(r.putMTM, expectedMTM, EPSILON);
+        }
+
+    }
+
+
+    @Test
+    public void testAlignmentOfOverriddenPricingMethods() throws Exception {
+
+        float yearsToMaturity=2;
+        double riskFreeRate = 0.2;
+
+        // Test ATM
+        testPrimitiveVsObjectTypes(Option.PutCall.PUT, 1.0f, 1.0f,
+                0.10f, yearsToMaturity, riskFreeRate);
+
+        // Test Call
+        testPrimitiveVsObjectTypes(Option.PutCall.CALL, 1.0f, 66.0f,
+                0.10f, 2.5f, riskFreeRate);
+
+        // Test Put
+        testPrimitiveVsObjectTypes(Option.PutCall.PUT, 1.0f, 100.0f,
+                0.10f, 0.6f, riskFreeRate);
+    }
+
+    private void testPrimitiveVsObjectTypes(Option.PutCall putCall, float strike, float underlyingPrice,
+                                 float impliedVol,
+                                 float yearsToMaturity,
+                                 double riskFreeRate) {
+
+        // Test constant within which doubles are considered equal
+        final double EPSILON = 0.0001d;
+
+        // ParameterisedMethod
+        PricingParams params= new PricingParams(putCall, strike, underlyingPrice, impliedVol, yearsToMaturity, riskFreeRate);
+        PricingResult pricingResult= BlackScholesPricer.priceOption(params);
+        assert(pricingResult != null);
+
+        // Primitive parameterised method
+        BlackScholesPricer.BlackScholesAnalytics r= BlackScholesPricer.getAnalytics(
+                putCall, strike, underlyingPrice, impliedVol, yearsToMaturity, riskFreeRate);
+
+        // The price of an option on expiry is half the difference between the price of the underlying and the strike
+        // This gives negative prices, which obviously would never be observable.
+        if (putCall == Option.PutCall.CALL) {
+            assertEquals(r.callMTM, pricingResult.getMtm(), EPSILON);
+        }
+        else
+        {
+            assertEquals(r.putMTM, pricingResult.getMtm(), EPSILON);
         }
 
     }

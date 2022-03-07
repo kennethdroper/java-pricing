@@ -17,8 +17,7 @@ public class PricingParamsTest {
      */
     @Test
     public void testJacksonObjectMapper() throws IOException {
-        PricingParams params= new PricingParams(Option.PutCall.CALL, 1.0f, 66.0f,
-                0.1f, 2.5f, 0.5);
+        PricingParams params= new PricingParams(Option.PutCall.CALL, 1.0f, 66.0f, 0.1f, 2.5f, 0.5);
 
         String expectedJSON = "{\"putCall\":\"CALL\"," +
                               "\"impliedVolatility\":1.0," +

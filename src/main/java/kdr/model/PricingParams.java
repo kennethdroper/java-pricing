@@ -1,6 +1,9 @@
 package kdr.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kdr.pricing.Option;
+
+import java.util.Objects;
 
 /**
  * Inputs to the Black-Scholes Option Pricing Algorithm.
@@ -16,7 +19,21 @@ public final class PricingParams {
     private final float yearsToMaturity;
     private final double riskFreeRate;
 
-    public PricingParams(Option.PutCall putCall, double impliedVolatility, float strikePrice, float underlyingPrice, float yearsToMaturity, double riskFreeRate) {
+    /**
+     * Need JsonProperty specified to remain immutable and be deserialisable by Jackson Databind
+     * @param putCall
+     * @param impliedVolatility
+     * @param strikePrice
+     * @param underlyingPrice
+     * @param yearsToMaturity
+     * @param riskFreeRate
+     */
+    public PricingParams(@JsonProperty("putCall") Option.PutCall putCall,
+                         @JsonProperty("impliedVolatility") double impliedVolatility,
+                         @JsonProperty("strikePrice") float strikePrice,
+                         @JsonProperty("underlyingPrice") float underlyingPrice,
+                         @JsonProperty("yearsToMaturity") float yearsToMaturity,
+                         @JsonProperty("riskFreeRate") double riskFreeRate) {
         this.putCall = putCall;
         this.impliedVolatility = impliedVolatility;
         this.strikePrice = strikePrice;
@@ -59,5 +76,24 @@ public final class PricingParams {
                 ", yearsToMaturity=" + yearsToMaturity +
                 ", riskFreeRate=" + riskFreeRate +
                 '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PricingParams that = (PricingParams) o;
+        return Double.compare(that.impliedVolatility, impliedVolatility) == 0 &&
+               Float.compare(that.strikePrice, strikePrice) == 0 &&
+               Float.compare(that.underlyingPrice, underlyingPrice) == 0 &&
+               Float.compare(that.yearsToMaturity, yearsToMaturity) == 0 &&
+               Double.compare(that.riskFreeRate, riskFreeRate) == 0 &&
+               putCall == that.putCall;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(putCall, impliedVolatility, strikePrice, underlyingPrice, yearsToMaturity, riskFreeRate);
     }
 }

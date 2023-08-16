@@ -53,11 +53,13 @@ public final class DateUtility {
      */
     private static float convertMillisToYearFraction(long millis){
         float yearFraction = (float) millis / 1000f / 60f / 60f / 24f / 365f;
+        /*
         float secs = millis / 1000f;
         float mins = secs / 60f;
         float hours = mins / 60f;
         float days = mins / 24f;
         float years = days / 365f;
+        */
         return yearFraction;
     }
 

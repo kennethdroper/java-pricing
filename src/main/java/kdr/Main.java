@@ -10,8 +10,6 @@ import kdr.pricing.Option;
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
-        System.out.println("Hello World");
 
         float k=100.0f, s=101.1f;
         double v=0.2, r = 0.05;

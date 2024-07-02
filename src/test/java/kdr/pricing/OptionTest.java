@@ -62,7 +62,8 @@ public class OptionTest {
         double expiry = o.getTimeToExpiry();
         assertTrue((Math.abs(expiry - expected) < YEAR_FRACTION_FOR_1_DAY),
                 "expiry: " + expiry + " must be lesss than expected: " + expected + " less " + YEAR_FRACTION_FOR_1_DAY
-        );    }
+        );
+    }
 
     @Test
     public void testGetTimeToExpiryHalfYear() throws Exception {

@@ -8,7 +8,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.3</version>
+        <!-- <version>2.4.3</version> -->
+        <version>3.3.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -25,10 +26,14 @@
         <maven.compiler.target>8</maven.compiler.target>
         <testNGVersion>6.10</testNGVersion>
         <junitVersion>4.13.1</junitVersion>
-        <slf4jVersion>1.7.9</slf4jVersion>
+        <!-- <slf4jVersion>1.7.9</slf4jVersion> -->
+        <slf4jVersion>2.0.13</slf4jVersion>
         <log4j2Version>2.17.1</log4j2Version>
         <springfoxVersion>2.6.1</springfoxVersion>
+        <springdocVersion>2.6.0</springdocVersion>
         <commons-math3-version>3.6.1</commons-math3-version>
+        <brave.version>5.9.5</brave.version>
+        <zipkin.reporter2.version>2.17.1</zipkin.reporter2.version>
     </properties>
 
     <dependencies>
@@ -101,6 +106,7 @@
         </dependency>
 
         <!-- Swagger -->
+        <!--
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -112,6 +118,29 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${springfoxVersion}</version>
             <scope>compile</scope>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdocVersion}</version>
+       </dependency>
+
+        <!-- Zipkin -->
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-bom</artifactId>
+            <version>${brave.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-spring-beans</artifactId>
+            <version>${zipkin.reporter2.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
         </dependency>
 
     </dependencies>
@@ -166,6 +195,45 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- Alternate plugin not used: https://github.com/openapi-tools/swagger-maven-plugin -->
+
+             <!--attempt 2 https://github.com/springdoc/springdoc-openapi-maven-plugin
+             <plugin> 
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                    <id>post-integration-test</id>
+                    <goals>
+                        <goal>stop</goal>
+                    </goals>
+                    </execution>
+                </executions>
+                </plugin>
+                <plugin>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                    <id>integration-test</id>
+                    <goals>
+                    <goal>generate</goal>
+                    </goals>
+                    </execution>
+                </executions>
+                </plugin>
+                -->
         </plugins>
     </build>
 </project>
